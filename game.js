@@ -55,6 +55,7 @@ let game = {
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
                 this.blocks.push({
+                    active: true,
                     width: 60,
                     height: 20,
                     x: 64 * col + 65,
@@ -64,14 +65,14 @@ let game = {
         }
     },
     update() {
-        this.platform.move();
-        this.ball.move();
         this.collideBlocks();
         this.collidePlatform();
+        this.platform.move();
+        this.ball.move();
     },
     collideBlocks() {
         for (let block of this.blocks) {
-            if (this.ball.collide(block)) {
+            if (block.active && this.ball.collide(block)) {
                 this.ball.bumpBlock(block);
             }
         }
@@ -97,7 +98,9 @@ let game = {
     },
     renderBlocks() {
         for (let block of this.blocks) {
-            this.ctx.drawImage(this.sprites.block, block.x, block.y);
+            if (block.active) {
+                this.ctx.drawImage(this.sprites.block, block.x, block.y);
+            }
         }
     },
     start: function() {
@@ -146,6 +149,7 @@ game.ball = {
     },
     bumpBlock(block) {
         this.dy *= -1;
+        block.active = false;
     },
     bumpPlatform(platform) {
         this.dy *= -1;
